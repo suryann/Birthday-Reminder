@@ -1,0 +1,3 @@
+- this project needs reference to another project FacebookSDK
+- FacebookSDK, in this github, is the copy from original source at https://github.com/facebook/facebook-android-sdk
+- there were some modifications done to the original source to fix the bug related to screen layout
