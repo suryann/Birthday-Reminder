@@ -2,7 +2,7 @@
  * Author - prajwolkumar.nakarmi@gmail.com
  */
 
-package prajwol.app.qms;
+package BDReminder.app;
 
 import java.util.Calendar;
 

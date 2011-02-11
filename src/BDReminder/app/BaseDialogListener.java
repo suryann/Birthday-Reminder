@@ -2,7 +2,7 @@
  * Class used as it is from Facebook Android SDK sample 
  */
 
-package prajwol.app.qms;
+package BDReminder.app;
 
 import com.facebook.android.DialogError;
 import com.facebook.android.FacebookError;

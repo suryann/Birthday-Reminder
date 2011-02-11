@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical" android:layout_width="fill_parent"
-	android:layout_height="fill_parent">
-	<TextView android:id="@+id/textViewStatus"
-		android:layout_width="fill_parent" android:layout_height="wrap_content"
-		android:text="" />
+<!-- author: saad  rearchitecture and refactor: saad -->
 
-	<EditText android:id="@+id/editTextStatus"
-		android:layout_width="226px" android:layout_height="40px"
-		android:text="" android:textSize="18sp" />
-
-	<TextView android:id="@+id/textViewTimeLabel"
-		android:layout_width="fill_parent" android:layout_height="wrap_content"
-		android:text="@string/time_label" />
-
-	<TextView android:id="@+id/textViewTime" android:layout_width="fill_parent"
-		android:layout_height="wrap_content" android:text="" />
-
-	<Button android:id="@+id/buttonSelectTime" android:layout_width="100px"
-		android:layout_height="30px" android:text="@string/select_time"
-		android:onClick="doSelectTime" />
-
-	<Button android:id="@+id/buttonQueue" android:layout_width="200px"
-		android:layout_height="40px" android:text="@string/queue"
-		android:onClick="doQueue" />
-</LinearLayout>
+<TabHost xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/tabhost"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <LinearLayout
+        android:orientation="vertical"       
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:padding="5dp">
+        
+        <TabWidget
+            android:id="@android:id/tabs"        
+            android:layout_width="fill_parent"                   
+            android:layout_height="wrap_content" />                  
+        
+        <FrameLayout
+            android:id="@android:id/tabcontent"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:padding="5dp" />
+            
+    </LinearLayout>
+    
+</TabHost>

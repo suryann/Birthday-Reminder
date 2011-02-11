@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+  	<item android:id="@+id/globalGreeting"
+		android:title="Global Greeting"
+		android:icon="@drawable/user"/>
+	<item android:id="@+id/Alert1"
+		android:title="Alert1" 
+		android:icon="@drawable/user"/>
+	<item android:id="@+id/Alert2"
+		android:title="Alert2"
+		android:icon="@drawable/user" />
+</menu>

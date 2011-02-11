@@ -2,7 +2,7 @@
  * Class used as it is from Facebook Android SDK sample 
  */
 
-package prajwol.app.qms;
+package BDReminder.app;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

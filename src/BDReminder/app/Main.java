@@ -2,13 +2,15 @@
  * Author - prajwolkumar.nakarmi@gmail.com
  */
 
-package prajwol.app.qms;
+package BDReminder.app;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import BDReminder.app.R;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.TabActivity;
 import android.app.TimePickerDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -20,19 +22,26 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.TabHost.TabSpec;
 
 import com.facebook.android.AsyncFacebookRunner;
 import com.facebook.android.Facebook;
 import com.facebook.android.FacebookError;
 import com.facebook.android.Util;
 
-public class Main extends Activity {
+public class Main extends TabActivity {
 
 	private static final String TAG = "Main";
 	public static final String MY_APP_ID = "102923773115476";
 
+	TabHost tabHost;
+	final String FRIENDS_TAB = "friends";
+	final String MONTH_TAB = "month";
+	final String WEEK_TAB = "week";
+	
 	private TextView statusLabel;
 	private EditText status;
 	private TextView time;
@@ -50,11 +59,38 @@ public class Main extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		statusLabel = (TextView) findViewById(R.id.textViewStatus);
-		status = (EditText) findViewById(R.id.editTextStatus);
-		time = (TextView) findViewById(R.id.textViewTime);
-		queue = (Button) findViewById(R.id.buttonQueue);
+		
+		
+		tabHost = (TabHost) findViewById(android.R.id.tabhost);
+		TabSpec contactSpec = tabHost
+				.newTabSpec(FRIENDS_TAB)
+				.setIndicator("Friends",
+						getResources().getDrawable(R.drawable.image))
+				.setContent(
+						new Intent(Main.this, ContactTab.class));
 
+		TabSpec monthSpec = tabHost
+				.newTabSpec(MONTH_TAB)
+				.setIndicator("Coming Month",
+						getResources().getDrawable(R.drawable.image))
+				.setContent(new Intent(Main.this, MonthTab.class));
+
+		// intent = new Intent().setClass(this, WeekTab.class);
+		TabSpec weekSpec = tabHost
+				.newTabSpec(WEEK_TAB)
+				.setIndicator("Coming Week",
+						getResources().getDrawable(R.drawable.image))
+				.setContent(new Intent(Main.this, WeekTab.class));
+
+		tabHost.addTab(contactSpec);
+		tabHost.addTab(monthSpec);
+		tabHost.addTab(weekSpec);
+
+		tabHost.setCurrentTab(0);
+	
+		
+		
+		
 		mFacebook = new Facebook(MY_APP_ID);
 		mAsyncRunner = new AsyncFacebookRunner(mFacebook);
 		mFacebook.authorize(this, new String[] { "publish_stream" },
@@ -104,12 +140,12 @@ public class Main extends Activity {
 				Log.d(TAG, "Response: " + response.toString());
 				JSONObject json = Util.parseJson(response);
 				final String userName = json.getString("name");
-				Main.this.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						statusLabel.setText(userName + "'s status");
-					}
-				});
+//				Main.this.runOnUiThread(new Runnable() {
+//					@Override
+//					public void run() {
+//						statusLabel.setText(userName + "'s status");
+//					}
+//				});
 			} catch (JSONException e) {
 				Log.e(TAG, "JSONException: " + e.getMessage());
 			} catch (FacebookError e) {
