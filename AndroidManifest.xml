@@ -1,28 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="BDReminder.app" android:versionCode="1" android:versionName="1.0">
+	package="se.kth.ID2216.bdrem" android:versionCode="1"
+	android:versionName="1.0">
 	<application android:icon="@drawable/user" android:label="@string/app_name">
-		<activity android:name=".Main" android:screenOrientation="portrait"
+		<activity android:name=".ui.Main" android:screenOrientation="portrait"
 			android:label="@string/app_name">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		<service android:enabled="true" android:name=".Timer" />
-		<activity android:name=".ContactTab"></activity>
-	<activity android:name=".MonthTab"></activity>                  
-	<activity android:name=".WeekTab"></activity>
-	<activity android:name=".PersonalGreeting"></activity>
-	<activity android:name=".GlobalGreeting"></activity>
-	<activity android:name=".Alert1"></activity>
-	<activity android:name=".Alert2"></activity>
+		<activity android:name=".ui.ContactTab"></activity>
+		<activity android:name=".ui.MonthTab"></activity>
+		<activity android:name=".ui.WeekTab"></activity>
+		<activity android:name=".ui.PersonalGreeting"></activity>
+		<activity android:name=".ui.GlobalGreeting"></activity>
+		<activity android:name=".ui.Alert1"></activity>
+		<activity android:name=".ui.Alert2"></activity>
 	</application>
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
 
-	<uses-sdk android:minSdkVersion="3" />
-	<supports-screens android:smallScreens="true"
-		android:normalScreens="true" android:largeScreens="true"
-		android:anyDensity="true" />
+	<!--
+		<uses-sdk android:minSdkVersion="3" /> <supports-screens
+		android:smallScreens="true" android:normalScreens="true"
+		android:largeScreens="true" android:anyDensity="true" />
+	-->
 
 </manifest> 

@@ -1,6 +1,6 @@
-package BDReminder.app;
+package se.kth.ID2216.bdrem.ui;
 
-import BDReminder.app.R;
+import se.kth.ID2216.bdrem.R;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;

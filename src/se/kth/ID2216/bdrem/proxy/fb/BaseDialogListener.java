@@ -2,7 +2,7 @@
  * Class used as it is from Facebook Android SDK sample 
  */
 
-package BDReminder.app;
+package se.kth.ID2216.bdrem.proxy.fb;
 
 import com.facebook.android.DialogError;
 import com.facebook.android.FacebookError;

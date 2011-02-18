@@ -1,25 +1,25 @@
-package BDReminder.app;
+package se.kth.ID2216.bdrem.ui;
 
-import BDReminder.app.R;
+import se.kth.ID2216.bdrem.R;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
 
-public class GlobalGreeting extends Activity {
+public class PersonalGreeting extends Activity {
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.global_greeting);
+        setContentView(R.layout.personal_greeting);
         
     }
     public void doBackToMain(View v) {
 		finish();
 	}
     public void doSaveGreeting(View v){
-    	Toast.makeText(this, "Global Greeting Saved", Toast.LENGTH_SHORT)
+    	Toast.makeText(this, "Personal Greeting Saved", Toast.LENGTH_SHORT)
 		.show();
     	finish();
     }

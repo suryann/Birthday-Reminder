@@ -1,8 +1,9 @@
-package BDReminder.app;
+package se.kth.ID2216.bdrem.ui;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import BDReminder.app.R;
+import se.kth.ID2216.bdrem.R;
+
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,7 +14,7 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
-public class WeekTab extends ListActivity {
+public class MonthTab extends ListActivity {
 	/** Called when the activity is first created. */
 	// SimpleAdapter mSchedule;
 	@Override
@@ -32,6 +33,11 @@ public class WeekTab extends ListActivity {
 		map.put("BD", "25th Feburary, 2011");
 		mylist.add(map);
 
+		map = new HashMap<String, String>();
+		map.put("name", "Prawjol");
+		map.put("BD", "30th Feburary, 2011");
+		mylist.add(map);
+
 		SimpleAdapter mSchedule = new SimpleAdapter(this, mylist,
 				R.layout.contact_tab, new String[] { "name", "BD" }, new int[] {
 						R.id.label, R.id.label2 });
@@ -45,7 +51,7 @@ public class WeekTab extends ListActivity {
 		// Get the item that was clicked
 //		Object o = this.getListAdapter().getItem(position);
 //		String keyword = o.toString();
-		Intent intent = new Intent(WeekTab.this, PersonalGreeting.class);
+		Intent intent = new Intent(MonthTab.this, PersonalGreeting.class);
 		startActivity(intent);
 		// Toast.makeText(this, "You selected: " + keyword, Toast.LENGTH_LONG)
 		// .show();
@@ -60,15 +66,15 @@ public class WeekTab extends ListActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		 switch (item.getItemId()) {
 	        case R.id.globalGreeting:
-	        	Intent intent = new Intent(WeekTab.this, GlobalGreeting.class);
+	        	Intent intent = new Intent(MonthTab.this, GlobalGreeting.class);
 	    		startActivity(intent);
 	        	break;
 	        case R.id.Alert1:
-	        	intent = new Intent(WeekTab.this, Alert1.class);
+	        	intent = new Intent(MonthTab.this, Alert1.class);
 	    		startActivity(intent);
 	        	break;
 	        case R.id.Alert2:
-	        	intent = new Intent(WeekTab.this, Alert2.class);
+	        	intent = new Intent(MonthTab.this, Alert2.class);
 	    		startActivity(intent);
 	        	break;
 	    }
