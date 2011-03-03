@@ -96,6 +96,16 @@ public class MyFacebook {
 		return filteredFriends;
 	}
 
+	public void post(String receiver, String message) {
+		if (isReady) {
+			Bundle params = new Bundle();
+			params.putString("message", message);
+
+			mAsyncRunner.request(receiver + "/feed", params, "POST",
+					new MyRequestListener(RequestType.FEED_POST));
+		}
+	}
+
 	class MyAuthorizeListener extends BaseDialogListener {
 		public void onComplete(Bundle values) {
 			Log.i(TAG, "Authorization successfull");
@@ -133,6 +143,10 @@ public class MyFacebook {
 					}
 					main.notify(Note.FRIENDLIST_CHANGED);
 					break;
+				case FEED_POST:
+					Log.d(TAG, "myfacebook.feedpost Response: "
+							+ response.toString());
+					break;
 				default:
 					break;
 				}
@@ -142,5 +156,9 @@ public class MyFacebook {
 				Log.e(TAG, "FacebookError: " + e.getMessage());
 			}
 		}
+	}
+
+	public boolean isReady() {
+		return isReady;
 	}
 }

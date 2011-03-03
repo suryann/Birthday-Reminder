@@ -17,6 +17,7 @@
 		<activity android:name=".ui.GlobalGreeting"></activity>
 		<activity android:name=".ui.Alert1"></activity>
 		<activity android:name=".ui.Alert2"></activity>
+		<service android:enabled="true" android:name=".service.BdRemService" />
 	</application>
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
 
