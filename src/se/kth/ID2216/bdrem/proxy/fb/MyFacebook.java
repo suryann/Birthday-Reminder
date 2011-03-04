@@ -1,11 +1,14 @@
 /*
- * author: Prajwol
+ * author: Prajwol, Sara
  */
 package se.kth.ID2216.bdrem.proxy.fb;
 
 import static se.kth.ID2216.bdrem.util.MyUtils.TAG;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 
@@ -88,11 +91,67 @@ public class MyFacebook {
 		return list;
 	}
 
-	// TODO
-	public List<MyFriend> getFilteredFriends(Filter filterBy) {
-		List<MyFriend> filteredFriends = new ArrayList<MyFriend>();
-		// 1. extract proper myFriend from myFriends based on filterBy
-		// 2. populate filteredFriends
+	public List<Map<String, String>> getFilteredFriendsAsMap(Filter filterBy) {
+		List<MyFriend> friendList = main.db.getFriendsFilteredBy(filterBy);
+		
+		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+		for (MyFriend friend : friendList) {
+			list.add(friend.getMap());
+		}
+		return list;		
+	}
+
+	public List<Map<String, String>> getFilteredFriends(Filter filterBy) {
+		List<Map<String, String>> filteredFriends = new ArrayList<Map<String, String>>();
+		Calendar cal = Calendar.getInstance();
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		String todaysDate = dateFormat.format(cal.getTime());
+		String[] dates = todaysDate.split("-");
+		String year = dates[0];
+		String month = dates[1];
+		String day = dates[2];
+		ArrayList<Integer> daysOfMonthLeft = findMonthDaysLeft(month, day, year);
+		ArrayList<Integer> daysOfWeekLeft = findWeekDaysLeft(month, day, year);
+
+		if (filterBy.equals(Filter.MONTH)) {
+			for (int d : daysOfMonthLeft) {
+				for (MyFriend friend : myFriends) {
+					if (friend.getBday().length() > 0) {
+						String[] friendsDayOfBirth = friend.getBday()
+								.split("/");
+
+						if (friendsDayOfBirth[0] != ""
+								&& friendsDayOfBirth[0].equals(month)) {
+							Log.e("made ", "this is " + friendsDayOfBirth[0]);
+							if (friendsDayOfBirth[1] != null
+									|| friendsDayOfBirth[1] != ""
+									&& Integer.valueOf(friendsDayOfBirth[1]) == d) {
+								filteredFriends.add(friend.getMap());
+								Log.e("Month", "Month issssss: "
+										+ friendsDayOfBirth[0]);
+							}
+						}
+					}
+				}
+			}
+		} else if (filterBy.equals(Filter.WEEK)) {
+			for (int d : daysOfWeekLeft) {
+				for (MyFriend friend : myFriends) {
+					if (friend.getBday().length() > 0) {
+						String[] friendsDayOfBirth = friend.getBday()
+								.split("/");
+						if (friendsDayOfBirth[0] != ""
+								&& friendsDayOfBirth[0].equals(month)) {
+							if (friendsDayOfBirth[1] != null
+									|| friendsDayOfBirth[1] != ""
+									&& Integer.valueOf(friendsDayOfBirth[1]) == d) {
+								filteredFriends.add(friend.getMap());
+							}
+						}
+					}
+				}
+			}
+		}
 		return filteredFriends;
 	}
 
@@ -141,6 +200,7 @@ public class MyFacebook {
 
 						myFriends.add(new MyFriend(fbID, name, bday, pic));
 					}
+					main.notify(Note.FRIENDLIST_RELOADED);
 					main.notify(Note.FRIENDLIST_CHANGED);
 					break;
 				case FEED_POST:
@@ -160,5 +220,51 @@ public class MyFacebook {
 
 	public boolean isReady() {
 		return isReady;
+	}
+
+	private ArrayList<Integer> findMonthDaysLeft(String month, String day,
+			String year) {
+		ArrayList<Integer> daysLeft = new ArrayList<Integer>();
+		int yearValue = Integer.valueOf(year);
+		int monthValue = Integer.valueOf(month);
+		int dayValue = Integer.valueOf(day);
+		Calendar calendar = new GregorianCalendar(yearValue, monthValue,
+				dayValue);
+		int maxDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+
+		for (int i = dayValue; i < maxDay; i++) {
+			daysLeft.add(i);
+		}
+
+		return daysLeft;
+	}
+
+	private ArrayList<Integer> findWeekDaysLeft(String month, String day,
+			String year) {
+		ArrayList<Integer> daysLeft = new ArrayList<Integer>();
+		int yearValue = Integer.valueOf(year);
+		int monthValue = Integer.valueOf(month);
+		int dayValue = Integer.valueOf(day);
+		Calendar calendar = new GregorianCalendar(yearValue, monthValue,
+				dayValue);
+		int maxDay = calendar.getActualMaximum(Calendar.DAY_OF_WEEK);
+
+		for (int i = dayValue; i < maxDay; i++) {
+			daysLeft.add(i);
+		}
+
+		return daysLeft;
+	}
+	
+	public int getFriendsCount(){
+		return myFriends.size();
+	}
+
+	public List<MyFriend> getMyFriends() {
+		return myFriends;
+	}
+
+	public void setMyFriends(List<MyFriend> myFriends) {
+		this.myFriends = myFriends;
 	}
 }

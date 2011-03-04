@@ -12,7 +12,11 @@ public class MyFriend {
 	private String bday; // can be missing, be in form of mm/dd or mm/dd/yyyy
 	private String pic;
 	private String bdayMessage;
-	private boolean isAutoPost;
+	private boolean isAutoPost;	
+	
+	public MyFriend(){
+		
+	}
 
 	public MyFriend(String fbID, String name, String bday, String pic) {
 		this.fbID = fbID;
@@ -29,10 +33,12 @@ public class MyFriend {
 		this.pic = pic;
 		this.bdayMessage = bdayMessage;
 		this.isAutoPost = isAutoPost;
-	}
+	}	
 
 	public Map<String, String> getMap() {
 		Map<String, String> map = new HashMap<String, String>();
+		map.put("fbID", fbID);
+		map.put("pic", pic);
 		map.put("name", name);
 		map.put("bday", bday);
 		return map;

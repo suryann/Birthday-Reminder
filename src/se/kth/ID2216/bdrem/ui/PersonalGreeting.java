@@ -1,26 +1,50 @@
 package se.kth.ID2216.bdrem.ui;
 
 import se.kth.ID2216.bdrem.R;
+import se.kth.ID2216.bdrem.proxy.localdb.MyLocalDB;
+import se.kth.ID2216.bdrem.proxy.model.MyFriend;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
-
 public class PersonalGreeting extends Activity {
-    /** Called when the activity is first created. */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.personal_greeting);
-        
-    }
-    public void doBackToMain(View v) {
+	TextView friendsName;
+	EditText messageBox;
+	CheckBox autoPost;
+
+	String facebookId;
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.personal_greeting);
+		friendsName = (TextView) findViewById(R.id.tvshowname);
+		messageBox = (EditText) findViewById(R.id.etmessage);
+		autoPost = (CheckBox) findViewById(R.id.cbpost);
+
+		friendsName.setText(getIntent().getExtras().getString("name"));
+		facebookId = getIntent().getExtras().getString("fbID");
+		
+		MyFriend friend = Main.db.getFriendByFbID(facebookId);
+		messageBox.setText(friend.getBdayMessage());
+		autoPost.setChecked(friend.isAutoPost());
+	}	
+
+	public void doBackToMain(View v) {
 		finish();
 	}
-    public void doSaveGreeting(View v){
-    	Toast.makeText(this, "Personal Greeting Saved", Toast.LENGTH_SHORT)
-		.show();
-    	finish();
-    }
+
+	public void doSaveGreeting(View v) {
+		// FIXME place db in proper place
+		Main.db.saveMessageByFbID(facebookId, messageBox.getText().toString(),
+				autoPost.isChecked());
+		finish();
+
+		Toast.makeText(this, "Personal Greeting Saved", Toast.LENGTH_SHORT)
+				.show();
+	}
 }

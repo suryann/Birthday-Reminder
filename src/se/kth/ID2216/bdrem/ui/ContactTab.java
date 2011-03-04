@@ -30,7 +30,7 @@ public class ContactTab extends ListActivity {
 	private SimpleAdapter adapter;
 	private List<Map<String, String>> list;
 	private ProgressDialog busyDialog;
-	
+
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -38,13 +38,16 @@ public class ContactTab extends ListActivity {
 		busyDialog.setIndeterminate(true);
 		busyDialog.setMessage("Please wait ...");
 		busyDialog.show();
+
+		refreshList();
 	}
 
-	private void refreshList() {		
+	private void refreshList() {
 		list = fb.getAllFriendsAsMap();
-		adapter = new SimpleAdapter(this, list, R.layout.contact_tab,
-				new String[] { "name", "bday" }, new int[] { R.id.label,
-						R.id.label2 });
+		adapter = new SimpleAdapter(this,
+				(List<? extends Map<String, ?>>) list, R.layout.contact_tab,
+				new String[] { "fbID", "pic", "name", "bday" }, new int[] { 0,
+						R.id.icon, R.id.label, R.id.label2 });
 		setListAdapter(adapter);
 		busyDialog.dismiss();
 	}
@@ -59,9 +62,15 @@ public class ContactTab extends ListActivity {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
+		Map<String, String> params = (Map<String, String>) this
+				.getListAdapter().getItem(position);
+
 		Intent intent = new Intent(ContactTab.this, PersonalGreeting.class);
+		intent.putExtra("fbID", params.get("fbID"));
+		intent.putExtra("name", params.get("name"));
 		startActivity(intent);
 	}
 
@@ -91,7 +100,7 @@ public class ContactTab extends ListActivity {
 
 	public class BcReceiver extends BroadcastReceiver {
 		@Override
-		public void onReceive(Context context, Intent intent) {						
+		public void onReceive(Context context, Intent intent) {
 			runOnUiThread(new Runnable() {
 				public void run() {
 					refreshList();

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>BDReminder</name>
+	<name>Birthday-Reminder</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -32,9 +32,9 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>facebook_android_src</name>
+			<name>facebook-android-sdk_src</name>
 			<type>2</type>
-			<locationURI>_android_facebook_android/src</locationURI>
+			<locationURI>_android_facebook_android_sdk_916b4b55/src</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
