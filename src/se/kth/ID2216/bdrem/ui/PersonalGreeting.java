@@ -1,7 +1,6 @@
 package se.kth.ID2216.bdrem.ui;
 
 import se.kth.ID2216.bdrem.R;
-import se.kth.ID2216.bdrem.proxy.localdb.MyLocalDB;
 import se.kth.ID2216.bdrem.proxy.model.MyFriend;
 import android.app.Activity;
 import android.os.Bundle;

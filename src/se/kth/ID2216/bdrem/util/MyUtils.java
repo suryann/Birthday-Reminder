@@ -1,8 +1,8 @@
 package se.kth.ID2216.bdrem.util;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class MyUtils {
@@ -14,6 +14,8 @@ public class MyUtils {
 	}
 
 	public static String[] getCurrentWeekDays() {
+		//return new String[] { "17", "21" };
+
 		return new String[] {
 				getTodaysDate()[2],
 				getLastDayofCurrentWeek().length() == 1 ? "0"
@@ -29,13 +31,40 @@ public class MyUtils {
 	}
 
 	public static String getLastDayofCurrentWeek() {
-		int yearValue = Integer.valueOf(getTodaysDate()[0]);
-		int monthValue = Integer.valueOf(getTodaysDate()[1]);
-		int dayValue = Integer.valueOf(getTodaysDate()[2]);
+		Calendar now = Calendar.getInstance();
 
-		Calendar calendar = new GregorianCalendar(yearValue, monthValue,
-				dayValue);
+		int maxDay = now.getActualMaximum(Calendar.DAY_OF_WEEK);
+		int left = maxDay - now.get(Calendar.DAY_OF_WEEK);
+		int lastDay = now.get(Calendar.DATE) + left;
 
-		return String.valueOf(calendar.getActualMaximum(Calendar.DAY_OF_WEEK));
+		return String.valueOf(lastDay);
+	}
+
+	public static long getAlarmStartTimeAsLong(int hour, int minute) {
+		Calendar now = new GregorianCalendar();
+		now.setTimeInMillis(System.currentTimeMillis());
+
+		Calendar alarmTime = new GregorianCalendar();
+		alarmTime.setTime(new Date());
+		alarmTime.set(Calendar.MINUTE, minute);
+		alarmTime.set(Calendar.HOUR_OF_DAY, hour);
+		alarmTime.set(Calendar.SECOND, 0);
+		alarmTime.set(Calendar.MILLISECOND, 0);
+
+		if (hour < now.get(Calendar.HOUR_OF_DAY)
+				|| (hour == now.get(Calendar.HOUR_OF_DAY) && minute <= now
+						.get(Calendar.MINUTE))) {
+			alarmTime.add(Calendar.DAY_OF_YEAR, 1);
+		}
+
+		return alarmTime.getTimeInMillis();
+	}
+
+	public static int getAlarmHour() {
+		return 12;
+	}
+
+	public static int getAlarmMinute() {
+		return 12;
 	}
 }

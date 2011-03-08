@@ -1,5 +1,5 @@
 /*
- * author: Sara, Prajwol
+ * author: Prajwol, Sara
  */
 package se.kth.ID2216.bdrem.proxy.localdb;
 
@@ -23,10 +23,11 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.util.Log;
 
 public class MyLocalDB {
-	private static final String DATABASE_NAME = "bdrem2";
+	private static final String DATABASE_NAME = "bdrem";
 	private static final String TABLE_FRIEND = "friend";
+	private static final String TABLE_FRIEND_TEMP = "friend_temp";
 	private static final String TABLE_SETTINGS = "settings";
-	private static final int DATABASE_VERSION = 3;
+	private static final int DATABASE_VERSION = 2;
 
 	public static final String KEY_ID = "friendID";
 	public static final int ID_COLUMN = 0;
@@ -51,14 +52,18 @@ public class MyLocalDB {
 	public static final int SETTINGS_VALUE_COLUMN = 2;
 
 	private static final String SETTINGS_CREATE = "create table "
-			+ TABLE_SETTINGS + " ( " + KEY_SETTINGS_ID + KEY_SETTINGS_VALUE
-			+ " );";
+			+ TABLE_SETTINGS + " ( " + KEY_SETTINGS_ID + " varchar(255), "
+			+ KEY_SETTINGS_VALUE + " varchar(255)" + " );";
 
 	private static final String FRIENDS_CREATE = "create table " + TABLE_FRIEND
 			+ " (" + KEY_ID + " integer primary key autoincrement, " + KEY_FBID
 			+ " int, " + KEY_NAME + " varchar(50)," + KEY_BIRTHDAY
 			+ " char(25), " + KEY_PIC + " char(50)," + KEY_BDAYMESSAGE
 			+ " varchar(255), " + KEY_AUTOPOST + " varchar(10)" + " );";
+
+	private static final String FRIENDS_TEMP_CREATE = "create table "
+			+ TABLE_FRIEND_TEMP + " as select * from " + TABLE_FRIEND
+			+ " where 1=0";
 
 	private SQLiteDatabase localDB;
 	// private final Context context;
@@ -84,8 +89,6 @@ public class MyLocalDB {
 		@Override
 		public void onCreate(SQLiteDatabase db) {
 			Log.d(TAG, "DB create");
-			Log.d(TAG, FRIENDS_CREATE);
-			Log.d(TAG, SETTINGS_CREATE);
 			db.execSQL(FRIENDS_CREATE);
 			db.execSQL(SETTINGS_CREATE);
 		}
@@ -97,7 +100,9 @@ public class MyLocalDB {
 
 			// Drop the old table
 			db.execSQL("DROP TABLE IF EXISTS " + TABLE_FRIEND);
+			db.execSQL("DROP TABLE IF EXISTS " + TABLE_FRIEND_TEMP);
 			db.execSQL("DROP TABLE IF EXISTS " + TABLE_SETTINGS);
+
 			// Create a new one
 			onCreate(db);
 		}
@@ -111,15 +116,22 @@ public class MyLocalDB {
 					KEY_SETTINGS_ID, KEY_SETTINGS_VALUE }, KEY_SETTINGS_ID
 					+ "=" + settingsKey, null, null, null, null, null);
 			if ((settings.getCount() == 0) || !settings.moveToFirst()) {
-				throw new SQLException("No settings found for key "
-						+ settingsKey);
+				return "";
 			}
 			settingsValue = settings.getString(SETTINGS_VALUE_COLUMN);
 		} catch (SQLiteException ex) {
-			ex.getMessage();
-			ex.getStackTrace();
 		}
 		return settingsValue;
+	}
+
+	public void setSettings(String key, String value) {
+		try {
+			localDB.execSQL("delete from " + TABLE_SETTINGS + " where "
+					+ KEY_SETTINGS_ID + " = '" + key + "';");
+			localDB.execSQL("insert into " + TABLE_SETTINGS + " values ('"
+					+ key + "', '" + value + "');");
+		} catch (SQLiteException ex) {
+		}
 	}
 
 	public List<MyFriend> getAllFriends() {
@@ -168,6 +180,13 @@ public class MyLocalDB {
 				Log.v(TAG, "localdb- " + selectionArgs[0] + ","
 						+ selectionArgs[1]);
 				break;
+			case DAY:
+				selection = KEY_BIRTHDAY + " LIKE ?";
+				selectionArgs = new String[1];
+				selectionArgs[0] = MyUtils.getCurrentMonth() + "/"
+						+ MyUtils.getCurrentWeekDays()[0] + "%";
+				Log.v(TAG, "localdb- " + selectionArgs[0]);
+				break;
 			default:
 				break;
 			}
@@ -191,6 +210,34 @@ public class MyLocalDB {
 			} while (allRows.moveToNext());
 		}
 		return friends;
+	}
+
+	public Report syncFriends(List<MyFriend> friends) {
+		Log.v(TAG, "mylocaldb.syncfriends Sync started!" + friends.size());
+		localDB.execSQL(FRIENDS_TEMP_CREATE);
+
+		for (MyFriend friend : friends) {
+			insertFriend(friend, TABLE_FRIEND_TEMP);
+		}
+
+		localDB.execSQL("update " + TABLE_FRIEND_TEMP
+				+ " set message = (select message from " + TABLE_FRIEND
+				+ " where " + TABLE_FRIEND + ".facebookID = "
+				+ TABLE_FRIEND_TEMP + ".facebookID)");
+		localDB.execSQL("update " + TABLE_FRIEND_TEMP
+				+ " set autopost = (select autopost from " + TABLE_FRIEND
+				+ " where " + TABLE_FRIEND + ".facebookID = "
+				+ TABLE_FRIEND_TEMP + ".facebookID)");
+
+		localDB.execSQL("DROP TABLE IF EXISTS " + TABLE_FRIEND);
+		localDB.execSQL("ALTER TABLE " + TABLE_FRIEND_TEMP + " RENAME to "
+				+ TABLE_FRIEND);
+
+		// friends.clear();
+		// friends = getAllFriends();
+
+		Log.v(TAG, "mylocaldb.syncfriends Sync finished." + friends.size());
+		return new Report(true, "Friends Synced");
 	}
 
 	public Report storeFriends(List<MyFriend> friends) {
@@ -230,7 +277,12 @@ public class MyLocalDB {
 	}
 
 	// Insert friend in database
+
 	public Report insertFriend(MyFriend friend) {
+		return insertFriend(friend, TABLE_FRIEND);
+	}
+
+	public Report insertFriend(MyFriend friend, String tableName) {
 		ContentValues newFriend = new ContentValues();
 		newFriend.put(KEY_FBID, friend.getFbID());
 		newFriend.put(KEY_NAME, friend.getName());
@@ -244,11 +296,9 @@ public class MyLocalDB {
 			newFriend.put(KEY_AUTOPOST, "false");
 
 		try {
-			localDB.insert(TABLE_FRIEND, null, newFriend);
+			localDB.insert(tableName, null, newFriend);
 		} catch (SQLiteException ex) {
-			ex.getMessage();
-			ex.getStackTrace();
-			return new Report(false, "Something went wrong!");
+			return new Report(false, ex.getMessage());
 		}
 
 		return new Report(true, "Friend inserted successfully!");
@@ -274,9 +324,7 @@ public class MyLocalDB {
 			String where = KEY_ID + "=" + rowId;
 			localDB.update(TABLE_FRIEND, updatedFriend, where, null);
 		} catch (SQLiteException ex) {
-			ex.getMessage();
-			ex.getStackTrace();
-			return new Report(false, "Something went wrong!");
+			return new Report(false, ex.getMessage());
 		}
 		return new Report(true, "Friend is updated successfully!");
 	}
@@ -295,9 +343,7 @@ public class MyLocalDB {
 			String where = KEY_ID + "=" + rowId;
 			localDB.update(TABLE_FRIEND, updatedFriend, where, null);
 		} catch (SQLiteException ex) {
-			ex.getMessage();
-			ex.getStackTrace();
-			return new Report(false, "Something went wrong!");
+			return new Report(false, ex.getMessage());
 		}
 		return new Report(true, "Friend is updated successfully!");
 	}
@@ -314,9 +360,7 @@ public class MyLocalDB {
 			localDB.update(TABLE_FRIEND, updatedFriend, where,
 					new String[] { ID });
 		} catch (SQLiteException ex) {
-			ex.getMessage();
-			ex.getStackTrace();
-			return new Report(false, "Something went wrong!");
+			return new Report(false, ex.getMessage());
 		}
 		return new Report(true, "Friend is updated successfully!");
 	}
@@ -327,9 +371,7 @@ public class MyLocalDB {
 		try {
 			localDB.delete(TABLE_FRIEND, where, null);
 		} catch (SQLiteException ex) {
-			ex.getMessage();
-			ex.getStackTrace();
-			return new Report(false, "Something went wrong!");
+			return new Report(false, ex.getMessage());
 		}
 		return new Report(false, "Friend is removed successfully!");
 	}

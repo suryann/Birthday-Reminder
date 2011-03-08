@@ -4,6 +4,8 @@
  */
 package se.kth.ID2216.bdrem.ui;
 
+import static se.kth.ID2216.bdrem.util.MyUtils.TAG;
+
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +19,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -33,23 +38,25 @@ public class ContactTab extends ListActivity {
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		busyDialog = new ProgressDialog(this);
 		busyDialog.setIndeterminate(true);
-		busyDialog.setMessage("Please wait ...");
-		busyDialog.show();
-
-		refreshList();
+		busyDialog.setMessage("Refreshing");
 	}
 
 	private void refreshList() {
-		list = fb.getAllFriendsAsMap();
-		adapter = new SimpleAdapter(this,
-				(List<? extends Map<String, ?>>) list, R.layout.contact_tab,
-				new String[] { "fbID", "pic", "name", "bday" }, new int[] { 0,
-						R.id.icon, R.id.label, R.id.label2 });
-		setListAdapter(adapter);
-		busyDialog.dismiss();
+		busyDialog.show();
+		new Thread() {
+			public void run() {
+				list = fb.getAllFriendsAsMap();
+				Log.v(TAG, "contactstab- refresh called. " + list.size());
+				adapter = new SimpleAdapter(ContactTab.this,
+						(List<? extends Map<String, ?>>) list,
+						R.layout.contact_tab, new String[] { "fbID", "pic",
+								"name", "bday" }, new int[] { 0, R.id.icon,
+								R.id.label, R.id.label2 });
+				 handler.sendEmptyMessage(0);
+			}
+		}.start();
 	}
 
 	@Override
@@ -58,6 +65,7 @@ public class ContactTab extends ListActivity {
 			bcr = new BcReceiver();
 			registerReceiver(bcr, new IntentFilter(MyUtils.FRIENDLIST_CHANGED));
 		}
+		refreshList();
 		super.onResume();
 	}
 
@@ -108,4 +116,12 @@ public class ContactTab extends ListActivity {
 			});
 		}
 	}
+
+	private Handler handler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			setListAdapter(adapter);
+			busyDialog.dismiss();
+		}
+	};
 }

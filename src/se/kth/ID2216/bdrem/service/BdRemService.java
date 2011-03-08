@@ -5,8 +5,13 @@
 package se.kth.ID2216.bdrem.service;
 
 import static se.kth.ID2216.bdrem.util.MyUtils.TAG;
+
+import java.util.List;
+
 import se.kth.ID2216.bdrem.R;
 import se.kth.ID2216.bdrem.proxy.fb.MyFacebook;
+import se.kth.ID2216.bdrem.proxy.model.Filter;
+import se.kth.ID2216.bdrem.proxy.model.MyFriend;
 import se.kth.ID2216.bdrem.ui.Main;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -23,7 +28,6 @@ public class BdRemService extends Service {
 	private final IBinder binder = new MyBinder();
 
 	private MyFacebook fb = MyFacebook.getInstance();
-	// private Main main = null; //use this to access Main
 
 	private NotificationManager myNotification;
 
@@ -45,24 +49,29 @@ public class BdRemService extends Service {
 
 	Runnable mTask = new Runnable() {
 		public void run() {
-			//TODO
-			// 1. Update the local DB from facebook 
+			Log.i(TAG, "bdremservice- started");
+			// 1. Update the local DB from facebook
 			// 2. Note - local DB should be merged than replaced
+			fb.reLoadAllFriends();// syncFriends B-)
+
 			// 3. Get the friends who have birthday today
+			List<MyFriend> bdayFriends = Main.db
+					.getFriendsFilteredBy(Filter.DAY);
+
 			// 2. Post the appropriate message in their wall OR/AND
 			// 3. Show alert
 			// 4. (2) and (3) should be based on settings like
 			// - automatic post, global/personal message
-
-			// E.g. to post the message - this is for sara :)
-			Log.i(TAG, "bdremservice- Tying to post");
-			//fb.post("569335195", "Testing at " + new Date());
-			try {
-				Thread.sleep(5000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			for (MyFriend friend : bdayFriends) {
+				String message = Main.db.getSettings("global_message");
+				Log
+						.i(TAG, "bdremservice- Tying to post to "
+								+ friend.getName());
+				// fb.post(friend.getFbID(), message);
+				//TODO::
 			}
+
+			Log.i(TAG, "bdremservice- finished");
 			BdRemService.this.stopSelf();
 		}
 	};
@@ -84,10 +93,6 @@ public class BdRemService extends Service {
 
 		myNotification.notify(R.string.app_name, notification);
 	}
-
-	// public void setMain(Main main) {
-	// this.main = main;
-	// }
 
 	class MyBinder extends Binder {
 		BdRemService getService() {
