@@ -14,7 +14,7 @@ public class GlobalGreeting extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.global_greeting);
-		greeting = (TextView) findViewById(R.id.tvGlobalGreeting);
+		greeting = (TextView) findViewById(R.id.etmessage);
 		greeting.setText(Main.db.getSettings("global_message"));
 	}
 
@@ -23,7 +23,7 @@ public class GlobalGreeting extends Activity {
 	}
 
 	public void doSaveGreeting(View v) {
-		Main.db.setSettings("global_greeting", greeting.getText().toString());
+		Main.db.setSettings("global_message", greeting.getText().toString());
 		Toast.makeText(this, "Global Greeting Saved", Toast.LENGTH_SHORT)
 				.show();
 		finish();

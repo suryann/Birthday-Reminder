@@ -95,7 +95,7 @@ public class ContactTab extends ListActivity {
 			startActivity(intent);
 			break;
 		case R.id.Alert1:
-			intent = new Intent(ContactTab.this, Alert1.class);
+			intent = new Intent(ContactTab.this, AlertPage.class);
 			startActivity(intent);
 			break;
 		case R.id.Alert2:

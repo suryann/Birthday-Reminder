@@ -87,7 +87,7 @@ public class MonthTab extends ListActivity {
 			startActivity(intent);
 			break;
 		case R.id.Alert1:
-			intent = new Intent(MonthTab.this, Alert1.class);
+			intent = new Intent(MonthTab.this, AlertPage.class);
 			startActivity(intent);
 			break;
 		case R.id.Alert2:

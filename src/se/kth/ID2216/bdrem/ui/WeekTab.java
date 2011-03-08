@@ -87,7 +87,7 @@ public class WeekTab extends ListActivity {
 			startActivity(intent);
 			break;
 		case R.id.Alert1:
-			intent = new Intent(WeekTab.this, Alert1.class);
+			intent = new Intent(WeekTab.this, AlertPage.class);
 			startActivity(intent);
 			break;
 		case R.id.Alert2:

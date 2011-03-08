@@ -7,33 +7,34 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MyFriend {
-	private String fbID;
-	private String name;
-	private String bday; // can be missing, be in form of mm/dd or mm/dd/yyyy
-	private String pic;
-	private String bdayMessage;
-	private boolean isAutoPost;	
-	
-	public MyFriend(){
-		
+	private String fbID = " ";
+	private String name = " ";
+	private String bday = " "; // can be missing, be in form of mm/dd or
+	// mm/dd/yyyy
+	private String pic = " ";
+	private String bdayMessage = " ";
+	private boolean isAutoPost = false;
+
+	public MyFriend() {
+
 	}
 
 	public MyFriend(String fbID, String name, String bday, String pic) {
-		this.fbID = fbID;
-		this.name = name;
-		this.bday = bday;
-		this.pic = pic;
+		this.fbID = fbID == null ? " " : fbID;
+		this.name = name == null ? " " : name;
+		this.bday = bday == null ? " " : bday;
+		this.pic = pic == null ? " " : pic;
 	}
 
 	public MyFriend(String fbID, String name, String bday, String pic,
 			String bdayMessage, boolean isAutoPost) {
-		this.fbID = fbID;
-		this.name = name;
-		this.bday = bday;
-		this.pic = pic;
-		this.bdayMessage = bdayMessage;
+		this.fbID = fbID == null ? " " : fbID;
+		this.name = name == null ? " " : name;
+		this.bday = bday == null ? " " : bday;
+		this.pic = pic == null ? " " : pic;
+		this.bdayMessage = bdayMessage == null ? " " : bdayMessage;
 		this.isAutoPost = isAutoPost;
-	}	
+	}
 
 	public Map<String, String> getMap() {
 		Map<String, String> map = new HashMap<String, String>();

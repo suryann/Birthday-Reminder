@@ -82,14 +82,7 @@ public class MyFacebook {
 	}
 
 	public List<Map<String, String>> getAllFriendsAsMap() {
-		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
-		if (myFriends.size() == 0) {
-			myFriends = Main.db.getAllFriends();
-		}
-		for (MyFriend friend : myFriends) {
-			list.add(friend.getMap());
-		}
-		return list;
+		return getFilteredFriendsAsMap(null);
 	}
 
 	public List<Map<String, String>> getFilteredFriendsAsMap(Filter filterBy) {
@@ -147,8 +140,7 @@ public class MyFacebook {
 
 						myFriends.add(new MyFriend(fbID, name, bday, pic));
 					}
-					main.notifyMain(Note.FRIENDLIST_RELOADED);
-					main.notifyMain(Note.FRIENDLIST_CHANGED);
+					main.notifyMain(Note.FRIENDLIST_RELOADED);					
 					break;
 				case FEED_POST:
 					Log.d(TAG, "myfacebook.feedpost Response: "

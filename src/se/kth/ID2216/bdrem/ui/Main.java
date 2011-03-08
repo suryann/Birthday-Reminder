@@ -10,13 +10,17 @@ import se.kth.ID2216.bdrem.R;
 import se.kth.ID2216.bdrem.proxy.fb.MyFacebook;
 import se.kth.ID2216.bdrem.proxy.localdb.MyLocalDB;
 import se.kth.ID2216.bdrem.service.BdRemService;
+import se.kth.ID2216.bdrem.ui.ContactTab.BcReceiver;
 import se.kth.ID2216.bdrem.util.MyUtils;
 import se.kth.ID2216.bdrem.util.Note;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.app.TabActivity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TabHost;
@@ -26,6 +30,7 @@ import android.widget.TabHost.TabSpec;
 public class Main extends TabActivity {
 	private MyFacebook fb = MyFacebook.getInstance();
 	public static MyLocalDB db = null;
+	private BcReceiver bcr = null;
 
 	private TabHost tabHost;
 	private final String FRIENDS_TAB = "friends";
@@ -81,6 +86,15 @@ public class Main extends TabActivity {
 		busyDialog.setMessage("Refreshing");
 	}
 
+	@Override
+	protected void onResume() {
+		if (bcr == null) {
+			bcr = new BcReceiver();
+			registerReceiver(bcr, new IntentFilter(MyUtils.BIRTHDAY_ALERT));
+		}
+		super.onResume();
+	}
+
 	public void loadContents() {
 		// 1. if fb.myFriends has data don't do nothing
 		// 1. contacttab should already have loaded it. return;
@@ -112,8 +126,7 @@ public class Main extends TabActivity {
 		if (isON) {
 			am.setRepeating(AlarmManager.RTC_WAKEUP, MyUtils
 					.getAlarmStartTimeAsLong(MyUtils.getAlarmHour(), MyUtils
-							.getAlarmMinute()), 24 * 60 * 60 * 1000,
-					mAlarmSender);
+							.getAlarmMinute()), 5 * 60 * 1000, mAlarmSender);
 			isAlarmSet = true;
 			Log.v(TAG, "main- alarm set");
 		} else {
@@ -127,6 +140,7 @@ public class Main extends TabActivity {
 		switch (what) {
 		case FRIENDLIST_RELOADED:
 			db.syncFriends(fb.getAllFriends());
+			sendBroadcast(new Intent(MyUtils.FRIENDLIST_CHANGED));
 			break;
 		case FRIENDLIST_CHANGED:
 			sendBroadcast(new Intent(MyUtils.FRIENDLIST_CHANGED));
@@ -134,6 +148,15 @@ public class Main extends TabActivity {
 			break;
 		default:
 			break;
+		}
+	}
+
+	public class BcReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Intent alertIntent = new Intent(Main.this, AlertPage.class);
+			alertIntent.putExtras(intent.getExtras());
+			startActivity(alertIntent);
 		}
 	}
 }

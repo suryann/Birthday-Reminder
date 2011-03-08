@@ -8,6 +8,7 @@ import java.util.GregorianCalendar;
 public class MyUtils {
 	public static final String TAG = "BdRem";
 	public static final String FRIENDLIST_CHANGED = "FRIENDLIST_CHANGED";
+	public static final String BIRTHDAY_ALERT = "BIRTHDAY_ALERT";
 
 	public static String getCurrentMonth() {
 		return getTodaysDate()[1];
@@ -61,10 +62,10 @@ public class MyUtils {
 	}
 
 	public static int getAlarmHour() {
-		return 12;
+		return 00;
 	}
 
 	public static int getAlarmMinute() {
-		return 12;
+		return 46;
 	}
 }

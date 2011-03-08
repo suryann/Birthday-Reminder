@@ -13,6 +13,7 @@ import se.kth.ID2216.bdrem.proxy.fb.MyFacebook;
 import se.kth.ID2216.bdrem.proxy.model.Filter;
 import se.kth.ID2216.bdrem.proxy.model.MyFriend;
 import se.kth.ID2216.bdrem.ui.Main;
+import se.kth.ID2216.bdrem.util.MyUtils;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -26,6 +27,7 @@ import android.widget.Toast;
 //ref - http://developer.android.com/resources/samples/ApiDemos/src/com/example/android/apis/app/AlarmService_Service.html
 public class BdRemService extends Service {
 	private final IBinder binder = new MyBinder();
+	private Intent intent = null;
 
 	private MyFacebook fb = MyFacebook.getInstance();
 
@@ -50,6 +52,8 @@ public class BdRemService extends Service {
 	Runnable mTask = new Runnable() {
 		public void run() {
 			Log.i(TAG, "bdremservice- started");
+
+			Log.i(TAG, "bdremservice- Trace10");
 			// 1. Update the local DB from facebook
 			// 2. Note - local DB should be merged than replaced
 			fb.reLoadAllFriends();// syncFriends B-)
@@ -62,14 +66,40 @@ public class BdRemService extends Service {
 			// 3. Show alert
 			// 4. (2) and (3) should be based on settings like
 			// - automatic post, global/personal message
-			for (MyFriend friend : bdayFriends) {
-				String message = Main.db.getSettings("global_message");
-				Log
-						.i(TAG, "bdremservice- Tying to post to "
-								+ friend.getName());
-				// fb.post(friend.getFbID(), message);
-				//TODO::
-			}
+			// Log.i(TAG, "bdremservice- Trace1");
+			for (int i = 0; i < 3; i++)
+				for (MyFriend friend : bdayFriends) {
+					// Log.i(TAG, "bdremservice- Trace2");
+					boolean isGlobal = true;
+					String message = Main.db.getSettings("global_message");
+					// Log.i(TAG, "bdremservice- Trace3");
+					if (!friend.getBdayMessage().trim().equals("")) {
+						// Log.i(TAG, "bdremservice- Trace4");
+						message = friend.getBdayMessage();
+						isGlobal = false;
+					}
+					// Log.i(TAG, "bdremservice- Trace5");
+					if (message.trim().equals("")) {
+						// Log.i(TAG, "bdremservice- Trace6");
+						message = "Happy Birthday!";
+						isGlobal = true;
+					}
+					// Log.i(TAG, "bdremservice- Trace7");
+					if (friend.isAutoPost()) {
+						// Log.i(TAG, "bdremservice- Trace8");
+						fb.post(friend.getFbID(), message);
+						// Log.i(TAG, "bdremservice- Tying to post to "
+						// + friend.getName() + ", " + message);
+					}
+					Log.i(TAG, "bdremservice- Trace9");
+					intent = new Intent(MyUtils.BIRTHDAY_ALERT);
+					intent.putExtra("fbID", friend.getFbID());
+					intent.putExtra("name", friend.getName());
+					intent.putExtra("message", message);
+					intent.putExtra("isGlobal", isGlobal);
+					intent.putExtra("isPosted", friend.isAutoPost());
+					sendBroadcast(intent);
+				}
 
 			Log.i(TAG, "bdremservice- finished");
 			BdRemService.this.stopSelf();

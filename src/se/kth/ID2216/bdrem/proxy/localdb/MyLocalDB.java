@@ -48,8 +48,8 @@ public class MyLocalDB {
 	// The name and column index of each column in setting's table
 	public static final String KEY_SETTINGS_ID = "settingsId";
 	public static final String KEY_SETTINGS_VALUE = "settingsValue";
-	public static final int SETTINGS_KEY_COLUMN = 1;
-	public static final int SETTINGS_VALUE_COLUMN = 2;
+	public static final int SETTINGS_KEY_COLUMN = 0;
+	public static final int SETTINGS_VALUE_COLUMN = 1;
 
 	private static final String SETTINGS_CREATE = "create table "
 			+ TABLE_SETTINGS + " ( " + KEY_SETTINGS_ID + " varchar(255), "
@@ -61,9 +61,11 @@ public class MyLocalDB {
 			+ " char(25), " + KEY_PIC + " char(50)," + KEY_BDAYMESSAGE
 			+ " varchar(255), " + KEY_AUTOPOST + " varchar(10)" + " );";
 
-	private static final String FRIENDS_TEMP_CREATE = "create table "
-			+ TABLE_FRIEND_TEMP + " as select * from " + TABLE_FRIEND
-			+ " where 1=0";
+	private static final String FRIENDS_TEMP_CREATE = "create table " + TABLE_FRIEND_TEMP
+	+ " (" + KEY_ID + " integer primary key autoincrement, " + KEY_FBID
+	+ " int, " + KEY_NAME + " varchar(50)," + KEY_BIRTHDAY
+	+ " char(25), " + KEY_PIC + " char(50)," + KEY_BDAYMESSAGE
+	+ " varchar(255), " + KEY_AUTOPOST + " varchar(10)" + " );";
 
 	private SQLiteDatabase localDB;
 	// private final Context context;
@@ -112,25 +114,29 @@ public class MyLocalDB {
 	public String getSettings(String settingsKey) {
 		String settingsValue = "";
 		try {
-			Cursor settings = localDB.query(true, TABLE_SETTINGS, new String[] {
-					KEY_SETTINGS_ID, KEY_SETTINGS_VALUE }, KEY_SETTINGS_ID
-					+ "=" + settingsKey, null, null, null, null, null);
+			Cursor settings = localDB.query(true, TABLE_SETTINGS, null,
+					KEY_SETTINGS_ID + " = ?", new String[] { settingsKey },
+					null, null, null, null);
 			if ((settings.getCount() == 0) || !settings.moveToFirst()) {
 				return "";
 			}
 			settingsValue = settings.getString(SETTINGS_VALUE_COLUMN);
 		} catch (SQLiteException ex) {
+			Log.d(TAG, ex.getMessage());
 		}
+		Log.v(TAG, "setting: " + settingsValue);
 		return settingsValue;
 	}
 
 	public void setSettings(String key, String value) {
+		Log.d(TAG, key + ", " + value);
 		try {
 			localDB.execSQL("delete from " + TABLE_SETTINGS + " where "
 					+ KEY_SETTINGS_ID + " = '" + key + "';");
 			localDB.execSQL("insert into " + TABLE_SETTINGS + " values ('"
 					+ key + "', '" + value + "');");
 		} catch (SQLiteException ex) {
+			Log.d(TAG, ex.getMessage());
 		}
 	}
 
@@ -185,11 +191,16 @@ public class MyLocalDB {
 				selectionArgs = new String[1];
 				selectionArgs[0] = MyUtils.getCurrentMonth() + "/"
 						+ MyUtils.getCurrentWeekDays()[0] + "%";
+				selectionArgs[0] = "12/23%";
 				Log.v(TAG, "localdb- " + selectionArgs[0]);
 				break;
 			default:
 				break;
 			}
+		}else{
+			selection = "name LIKE ?";
+			selectionArgs = new String[1];			
+			selectionArgs[0] = "%aad%";
 		}
 
 		Cursor allRows = localDB.query(false, TABLE_FRIEND, resultColumns,
@@ -202,8 +213,8 @@ public class MyLocalDB {
 				String birthday = allRows.getString(BIRTHDAY_COLUMN);
 				String picture = allRows.getString(PIC_COLUMN);
 				String message = allRows.getString(BDAYMESSAGE_COLUMN);
-				boolean isAutoPost = (allRows.getString(AUTOPOST_COLUMN) == "false") ? false
-						: true;
+				boolean isAutoPost = allRows.getString(AUTOPOST_COLUMN).equals(
+						"false") ? false : true;
 				MyFriend friend = new MyFriend(fbId, name, birthday, picture,
 						message, isAutoPost);
 				friends.add(friend);
@@ -214,6 +225,7 @@ public class MyLocalDB {
 
 	public Report syncFriends(List<MyFriend> friends) {
 		Log.v(TAG, "mylocaldb.syncfriends Sync started!" + friends.size());
+		localDB.execSQL("DROP TABLE IF EXISTS " + TABLE_FRIEND_TEMP);
 		localDB.execSQL(FRIENDS_TEMP_CREATE);
 
 		for (MyFriend friend : friends) {
@@ -224,11 +236,18 @@ public class MyLocalDB {
 				+ " set message = (select message from " + TABLE_FRIEND
 				+ " where " + TABLE_FRIEND + ".facebookID = "
 				+ TABLE_FRIEND_TEMP + ".facebookID)");
+		
+		localDB.execSQL("update " + TABLE_FRIEND_TEMP
+				+ " set message = ' ' where message is null;");
+				
 		localDB.execSQL("update " + TABLE_FRIEND_TEMP
 				+ " set autopost = (select autopost from " + TABLE_FRIEND
 				+ " where " + TABLE_FRIEND + ".facebookID = "
 				+ TABLE_FRIEND_TEMP + ".facebookID)");
 
+		localDB.execSQL("update " + TABLE_FRIEND_TEMP
+				+ " set autopost = 'false' where autopost is null;");
+		
 		localDB.execSQL("DROP TABLE IF EXISTS " + TABLE_FRIEND);
 		localDB.execSQL("ALTER TABLE " + TABLE_FRIEND_TEMP + " RENAME to "
 				+ TABLE_FRIEND);
