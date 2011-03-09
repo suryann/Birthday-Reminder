@@ -27,7 +27,7 @@ public class MyLocalDB {
 	private static final String TABLE_FRIEND = "friend";
 	private static final String TABLE_FRIEND_TEMP = "friend_temp";
 	private static final String TABLE_SETTINGS = "settings";
-	private static final int DATABASE_VERSION = 2;
+	private static final int DATABASE_VERSION = 4;
 
 	public static final String KEY_ID = "friendID";
 	public static final int ID_COLUMN = 0;
@@ -58,13 +58,13 @@ public class MyLocalDB {
 	private static final String FRIENDS_CREATE = "create table " + TABLE_FRIEND
 			+ " (" + KEY_ID + " integer primary key autoincrement, " + KEY_FBID
 			+ " int, " + KEY_NAME + " varchar(50)," + KEY_BIRTHDAY
-			+ " char(25), " + KEY_PIC + " char(50)," + KEY_BDAYMESSAGE
+			+ " varchar(25), " + KEY_PIC + " varchar(255)," + KEY_BDAYMESSAGE
 			+ " varchar(255), " + KEY_AUTOPOST + " varchar(10)" + " );";
 
 	private static final String FRIENDS_TEMP_CREATE = "create table " + TABLE_FRIEND_TEMP
 	+ " (" + KEY_ID + " integer primary key autoincrement, " + KEY_FBID
 	+ " int, " + KEY_NAME + " varchar(50)," + KEY_BIRTHDAY
-	+ " char(25), " + KEY_PIC + " char(50)," + KEY_BDAYMESSAGE
+	+ " varchar(25), " + KEY_PIC + " varchar(255)," + KEY_BDAYMESSAGE
 	+ " varchar(255), " + KEY_AUTOPOST + " varchar(10)" + " );";
 
 	private SQLiteDatabase localDB;
@@ -197,14 +197,14 @@ public class MyLocalDB {
 			default:
 				break;
 			}
-		}else{
-			selection = "name LIKE ?";
-			selectionArgs = new String[1];			
-			selectionArgs[0] = "%aad%";
 		}
+		/*TESTING
+		 * else{ selection = "name LIKE ?"; selectionArgs = new String[1];
+		 * selectionArgs[0] = "%aad%"; }
+		 */
 
 		Cursor allRows = localDB.query(false, TABLE_FRIEND, resultColumns,
-				selection, selectionArgs, null, null, null, null);
+				selection, selectionArgs, null, null, KEY_NAME, null);
 
 		if (allRows.moveToFirst()) {
 			do {

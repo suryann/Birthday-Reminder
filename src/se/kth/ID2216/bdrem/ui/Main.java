@@ -145,7 +145,7 @@ public class Main extends TabActivity {
 	public void notifyMain(Note what) {
 		switch (what) {
 		case FRIENDLIST_RELOADED:
-			db.syncFriends(fb.getAllFriends());
+			db.syncFriends(fb.getMyFriends());
 			sendBroadcast(new Intent(MyUtils.FRIENDLIST_CHANGED));
 			break;
 		case FRIENDLIST_CHANGED:

@@ -78,7 +78,11 @@ public class MyFacebook {
 	}
 
 	public List<MyFriend> getAllFriends() {
-		return myFriends;
+		return getFilteredFriends(null);
+	}
+
+	public List<MyFriend> getFilteredFriends(Filter filterBy) {
+		return Main.db.getFriendsFilteredBy(filterBy);
 	}
 
 	public List<Map<String, String>> getAllFriendsAsMap() {
@@ -135,12 +139,10 @@ public class MyFacebook {
 						String name = json.getString("name");
 						String bday = json.optString("birthday");// notice opt
 						String pic = json.getString("picture");
-						// Log.v(TAG, "myfacebook.friendlist " + name + ":" +
-						// bday);
 
 						myFriends.add(new MyFriend(fbID, name, bday, pic));
 					}
-					main.notifyMain(Note.FRIENDLIST_RELOADED);					
+					main.notifyMain(Note.FRIENDLIST_RELOADED);
 					break;
 				case FEED_POST:
 					Log.d(TAG, "myfacebook.feedpost Response: "

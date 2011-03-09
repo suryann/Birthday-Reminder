@@ -7,10 +7,10 @@ package se.kth.ID2216.bdrem.ui;
 import static se.kth.ID2216.bdrem.util.MyUtils.TAG;
 
 import java.util.List;
-import java.util.Map;
 
 import se.kth.ID2216.bdrem.R;
 import se.kth.ID2216.bdrem.proxy.fb.MyFacebook;
+import se.kth.ID2216.bdrem.proxy.model.MyFriend;
 import se.kth.ID2216.bdrem.util.MyUtils;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
@@ -27,13 +27,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 
 public class ContactTab extends ListActivity {
 	private MyFacebook fb = MyFacebook.getInstance();
 	private BcReceiver bcr = null;
-	private SimpleAdapter adapter;
-	private List<Map<String, String>> list;
+	private MyAdapter adapter;
+	private List<MyFriend> list;
 	private ProgressDialog busyDialog;
 
 	public void onCreate(Bundle savedInstanceState) {
@@ -47,14 +46,10 @@ public class ContactTab extends ListActivity {
 		busyDialog.show();
 		new Thread() {
 			public void run() {
-				list = fb.getAllFriendsAsMap();
+				list = fb.getAllFriends();
 				Log.v(TAG, "contactstab- refresh called. " + list.size());
-				adapter = new SimpleAdapter(ContactTab.this,
-						(List<? extends Map<String, ?>>) list,
-						R.layout.contact_tab, new String[] { "fbID", "pic",
-								"name", "bday" }, new int[] { 0, R.id.icon,
-								R.id.label, R.id.label2 });
-				 handler.sendEmptyMessage(0);
+				adapter = new MyAdapter(ContactTab.this, list);
+				handler.sendEmptyMessage(0);
 			}
 		}.start();
 	}
@@ -73,12 +68,11 @@ public class ContactTab extends ListActivity {
 	@SuppressWarnings("unchecked")
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
-		Map<String, String> params = (Map<String, String>) this
-				.getListAdapter().getItem(position);
+		MyFriend friend = (MyFriend) this.getListAdapter().getItem(position);
 
 		Intent intent = new Intent(ContactTab.this, PersonalGreeting.class);
-		intent.putExtra("fbID", params.get("fbID"));
-		intent.putExtra("name", params.get("name"));
+		intent.putExtra("fbID", friend.getFbID());
+		intent.putExtra("name", friend.getName());
 		startActivity(intent);
 	}
 
