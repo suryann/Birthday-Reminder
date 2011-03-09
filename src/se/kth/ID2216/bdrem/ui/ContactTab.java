@@ -43,7 +43,7 @@ public class ContactTab extends ListActivity {
 	}
 
 	private void refreshList() {
-		busyDialog.show();
+//		busyDialog.show();
 		new Thread() {
 			public void run() {
 				list = fb.getAllFriends();
@@ -110,7 +110,7 @@ public class ContactTab extends ListActivity {
 		@Override
 		public void handleMessage(Message msg) {
 			setListAdapter(adapter);
-			busyDialog.dismiss();
+			//busyDialog.dismiss();
 		}
 	};
 }

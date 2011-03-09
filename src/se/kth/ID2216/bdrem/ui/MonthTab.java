@@ -5,11 +5,11 @@
 package se.kth.ID2216.bdrem.ui;
 
 import java.util.List;
-import java.util.Map;
 
 import se.kth.ID2216.bdrem.R;
 import se.kth.ID2216.bdrem.proxy.fb.MyFacebook;
 import se.kth.ID2216.bdrem.proxy.model.Filter;
+import se.kth.ID2216.bdrem.proxy.model.MyFriend;
 import se.kth.ID2216.bdrem.util.MyUtils;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
@@ -23,13 +23,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 
 public class MonthTab extends ListActivity {
 	private MyFacebook fb = MyFacebook.getInstance();
 	private BcReceiver bcr = null;
-	private SimpleAdapter adapter;
-	private List<Map<String, String>> list;
+	private MyAdapter adapter;
+	private List<MyFriend> list;
 	private ProgressDialog busyDialog;
 
 	public void onCreate(Bundle savedInstanceState) {
@@ -39,15 +38,13 @@ public class MonthTab extends ListActivity {
 		busyDialog.setIndeterminate(true);
 		busyDialog.setMessage("Please wait ...");
 		busyDialog.show();
-		refreshList(); 
+		refreshList();
 	}
-	
+
 	private void refreshList() {
-		//list = fb.getFilteredFriends(Filter.MONTH);		
-		list = fb.getFilteredFriendsAsMap(Filter.MONTH);
-		adapter = new SimpleAdapter(this, (List<? extends Map<String, ?>>) list, R.layout.contact_tab,
-				new String[] { "fbID", "pic", "name", "bday" }, new int[] { 0,
-						R.id.icon, R.id.label, R.id.label2 });
+		// list = fb.getFilteredFriends(Filter.MONTH);
+		list = fb.getFilteredFriends(Filter.MONTH);
+		adapter = new MyAdapter(MonthTab.this, list);
 		setListAdapter(adapter);
 		busyDialog.dismiss();
 	}
@@ -65,12 +62,11 @@ public class MonthTab extends ListActivity {
 	@SuppressWarnings("unchecked")
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
-		Map<String, String> params = (Map<String, String>) this
-				.getListAdapter().getItem(position);
+		MyFriend friend = (MyFriend) this.getListAdapter().getItem(position);
 
 		Intent intent = new Intent(MonthTab.this, PersonalGreeting.class);
-		intent.putExtra("fbID", params.get("fbID"));
-		intent.putExtra("name", params.get("name"));
+		intent.putExtra("fbID", friend.getFbID());
+		intent.putExtra("name", friend.getName());
 		startActivity(intent);
 	}
 

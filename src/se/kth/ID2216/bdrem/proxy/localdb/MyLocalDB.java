@@ -61,11 +61,12 @@ public class MyLocalDB {
 			+ " varchar(25), " + KEY_PIC + " varchar(255)," + KEY_BDAYMESSAGE
 			+ " varchar(255), " + KEY_AUTOPOST + " varchar(10)" + " );";
 
-	private static final String FRIENDS_TEMP_CREATE = "create table " + TABLE_FRIEND_TEMP
-	+ " (" + KEY_ID + " integer primary key autoincrement, " + KEY_FBID
-	+ " int, " + KEY_NAME + " varchar(50)," + KEY_BIRTHDAY
-	+ " varchar(25), " + KEY_PIC + " varchar(255)," + KEY_BDAYMESSAGE
-	+ " varchar(255), " + KEY_AUTOPOST + " varchar(10)" + " );";
+	private static final String FRIENDS_TEMP_CREATE = "create table "
+			+ TABLE_FRIEND_TEMP + " (" + KEY_ID
+			+ " integer primary key autoincrement, " + KEY_FBID + " int, "
+			+ KEY_NAME + " varchar(50)," + KEY_BIRTHDAY + " varchar(25), "
+			+ KEY_PIC + " varchar(255)," + KEY_BDAYMESSAGE + " varchar(255), "
+			+ KEY_AUTOPOST + " varchar(10)" + " );";
 
 	private SQLiteDatabase localDB;
 	// private final Context context;
@@ -167,6 +168,7 @@ public class MyLocalDB {
 
 		String selection = null;
 		String[] selectionArgs = null;
+		String orderBy = KEY_NAME;
 
 		if (filterBy != null) {
 			switch (filterBy) {
@@ -174,6 +176,8 @@ public class MyLocalDB {
 				selection = KEY_BIRTHDAY + " LIKE ?";
 				selectionArgs = new String[1];
 				selectionArgs[0] = MyUtils.getCurrentMonth() + "%";
+				orderBy = KEY_BIRTHDAY;
+				Log.v(TAG, "localdb.month- " + selectionArgs[0]);
 				break;
 			case WEEK:
 				selection = KEY_BIRTHDAY + " >= ? and " + KEY_BIRTHDAY
@@ -183,7 +187,8 @@ public class MyLocalDB {
 						+ MyUtils.getCurrentWeekDays()[0];
 				selectionArgs[1] = MyUtils.getCurrentMonth() + "/"
 						+ MyUtils.getCurrentWeekDays()[1];
-				Log.v(TAG, "localdb- " + selectionArgs[0] + ","
+				orderBy = KEY_BIRTHDAY;
+				Log.v(TAG, "localdb.week- " + selectionArgs[0] + ","
 						+ selectionArgs[1]);
 				break;
 			case DAY:
@@ -192,19 +197,19 @@ public class MyLocalDB {
 				selectionArgs[0] = MyUtils.getCurrentMonth() + "/"
 						+ MyUtils.getCurrentWeekDays()[0] + "%";
 				selectionArgs[0] = "12/23%";
-				Log.v(TAG, "localdb- " + selectionArgs[0]);
+				Log.v(TAG, "localdb.day- " + selectionArgs[0]);
 				break;
 			default:
 				break;
 			}
 		}
-		/*TESTING
-		 * else{ selection = "name LIKE ?"; selectionArgs = new String[1];
-		 * selectionArgs[0] = "%aad%"; }
+		/*
+		 * TESTING else{ selection = "name LIKE ?"; selectionArgs = new
+		 * String[1]; selectionArgs[0] = "%aad%"; }
 		 */
 
 		Cursor allRows = localDB.query(false, TABLE_FRIEND, resultColumns,
-				selection, selectionArgs, null, null, KEY_NAME, null);
+				selection, selectionArgs, null, null, orderBy, null);
 
 		if (allRows.moveToFirst()) {
 			do {
@@ -236,10 +241,10 @@ public class MyLocalDB {
 				+ " set message = (select message from " + TABLE_FRIEND
 				+ " where " + TABLE_FRIEND + ".facebookID = "
 				+ TABLE_FRIEND_TEMP + ".facebookID)");
-		
+
 		localDB.execSQL("update " + TABLE_FRIEND_TEMP
 				+ " set message = ' ' where message is null;");
-				
+
 		localDB.execSQL("update " + TABLE_FRIEND_TEMP
 				+ " set autopost = (select autopost from " + TABLE_FRIEND
 				+ " where " + TABLE_FRIEND + ".facebookID = "
@@ -247,7 +252,7 @@ public class MyLocalDB {
 
 		localDB.execSQL("update " + TABLE_FRIEND_TEMP
 				+ " set autopost = 'false' where autopost is null;");
-		
+
 		localDB.execSQL("DROP TABLE IF EXISTS " + TABLE_FRIEND);
 		localDB.execSQL("ALTER TABLE " + TABLE_FRIEND_TEMP + " RENAME to "
 				+ TABLE_FRIEND);
