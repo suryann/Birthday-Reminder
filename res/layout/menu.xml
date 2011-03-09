@@ -3,11 +3,9 @@
   xmlns:android="http://schemas.android.com/apk/res/android">
   	<item android:id="@+id/globalGreeting"
 		android:title="Global Greeting"
-		android:icon="@drawable/user"/>
-	<item android:id="@+id/Alert1"
-		android:title="Alert1" 
-		android:icon="@drawable/user"/>
-	<item android:id="@+id/Alert2"
-		android:title="Alert2"
-		android:icon="@drawable/user" />
+		android:icon="@drawable/greeting"/>
+	
+	<item android:id="@+id/Settings"
+	android:title="Settings"
+	android:icon="@drawable/settings_icon" />
 </menu>

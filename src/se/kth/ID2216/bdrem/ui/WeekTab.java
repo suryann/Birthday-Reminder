@@ -86,14 +86,9 @@ public class WeekTab extends ListActivity {
 			intent = new Intent(WeekTab.this, GlobalGreeting.class);
 			startActivity(intent);
 			break;
-		case R.id.Alert1:
-			intent = new Intent(WeekTab.this, AlertPage.class);
+		case R.id.Settings:
+			intent = new Intent(WeekTab.this, Settings.class);
 			startActivity(intent);
-			break;
-		case R.id.Alert2:
-			intent = new Intent(WeekTab.this, Alert2.class);
-			startActivity(intent);
-			break;
 		}
 		return (super.onOptionsItemSelected(item));
 	}

@@ -16,6 +16,7 @@
 		<activity android:name=".ui.PersonalGreeting"></activity>
 		<activity android:name=".ui.GlobalGreeting"></activity>
 		<activity android:name=".ui.AlertPage"></activity>
+		<activity android:name=".ui.Settings"></activity>
 		<activity android:name=".ui.Alert2"></activity>
 		<service android:enabled="true" android:name=".service.BdRemService" />
 	</application>

@@ -20,7 +20,7 @@ android:id="@+id/tvmessage"
 android:layout_width="wrap_content"
 android:layout_height="wrap_content"
 android:textColor="#ffff9900"
-android:text="Friends Birthday"
+android:text="Saad Birthday"
 android:layout_x="37px"
 android:layout_y="45px"
 >

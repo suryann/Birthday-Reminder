@@ -5,17 +5,20 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import se.kth.ID2216.bdrem.ui.Main;
+
 public class MyUtils {
 	public static final String TAG = "BdRem";
 	public static final String FRIENDLIST_CHANGED = "FRIENDLIST_CHANGED";
 	public static final String BIRTHDAY_ALERT = "BIRTHDAY_ALERT";
+	public static final String ALARM_RESET = "ALARM_RESET";
 
 	public static String getCurrentMonth() {
 		return getTodaysDate()[1];
 	}
 
 	public static String[] getCurrentWeekDays() {
-		//return new String[] { "17", "21" };
+		// return new String[] { "17", "21" };
 
 		return new String[] {
 				getTodaysDate()[2],
@@ -62,10 +65,20 @@ public class MyUtils {
 	}
 
 	public static int getAlarmHour() {
-		return 00;
+		try {
+			int syncHour = Integer.valueOf(Main.db.getSettings("hour"));
+			return syncHour;
+		} catch (NumberFormatException e) {
+			return 10;
+		}
 	}
 
 	public static int getAlarmMinute() {
-		return 46;
+		try {
+			int syncMinute = Integer.valueOf(Main.db.getSettings("minute"));
+			return syncMinute;
+		} catch (NumberFormatException e) {
+			return 10;
+		}
 	}
 }

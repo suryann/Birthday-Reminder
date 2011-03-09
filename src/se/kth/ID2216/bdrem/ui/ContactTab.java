@@ -94,14 +94,9 @@ public class ContactTab extends ListActivity {
 			intent = new Intent(ContactTab.this, GlobalGreeting.class);
 			startActivity(intent);
 			break;
-		case R.id.Alert1:
-			intent = new Intent(ContactTab.this, AlertPage.class);
+		case R.id.Settings:
+			intent = new Intent(ContactTab.this, Settings.class);
 			startActivity(intent);
-			break;
-		case R.id.Alert2:
-			intent = new Intent(ContactTab.this, Alert2.class);
-			startActivity(intent);
-			break;
 		}
 		return (super.onOptionsItemSelected(item));
 	}

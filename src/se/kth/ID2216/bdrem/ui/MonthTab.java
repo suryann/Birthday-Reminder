@@ -86,14 +86,9 @@ public class MonthTab extends ListActivity {
 			intent = new Intent(MonthTab.this, GlobalGreeting.class);
 			startActivity(intent);
 			break;
-		case R.id.Alert1:
-			intent = new Intent(MonthTab.this, AlertPage.class);
+		case R.id.Settings:
+			intent = new Intent(MonthTab.this, Settings.class);
 			startActivity(intent);
-			break;
-		case R.id.Alert2:
-			intent = new Intent(MonthTab.this, Alert2.class);
-			startActivity(intent);
-			break;
 		}
 		return (super.onOptionsItemSelected(item));
 	}

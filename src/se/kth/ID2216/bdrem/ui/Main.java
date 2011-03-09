@@ -10,7 +10,6 @@ import se.kth.ID2216.bdrem.R;
 import se.kth.ID2216.bdrem.proxy.fb.MyFacebook;
 import se.kth.ID2216.bdrem.proxy.localdb.MyLocalDB;
 import se.kth.ID2216.bdrem.service.BdRemService;
-import se.kth.ID2216.bdrem.ui.ContactTab.BcReceiver;
 import se.kth.ID2216.bdrem.util.MyUtils;
 import se.kth.ID2216.bdrem.util.Note;
 import android.app.AlarmManager;
@@ -31,6 +30,7 @@ public class Main extends TabActivity {
 	private MyFacebook fb = MyFacebook.getInstance();
 	public static MyLocalDB db = null;
 	private BcReceiver bcr = null;
+	private BcReceiverAlarm bcra = null;
 
 	private TabHost tabHost;
 	private final String FRIENDS_TAB = "friends";
@@ -51,15 +51,15 @@ public class Main extends TabActivity {
 
 		tabHost = (TabHost) findViewById(android.R.id.tabhost);
 		TabSpec contactSpec = tabHost.newTabSpec(FRIENDS_TAB).setIndicator(
-				"Friends", getResources().getDrawable(R.drawable.image))
+				"Friends", getResources().getDrawable(R.drawable.friends))
 				.setContent(new Intent(Main.this, ContactTab.class));
 
 		TabSpec monthSpec = tabHost.newTabSpec(MONTH_TAB).setIndicator(
-				"Current Month", getResources().getDrawable(R.drawable.image))
+				"Current Month", getResources().getDrawable(R.drawable.month))
 				.setContent(new Intent(Main.this, MonthTab.class));
 
 		TabSpec weekSpec = tabHost.newTabSpec(WEEK_TAB).setIndicator(
-				"Current Week", getResources().getDrawable(R.drawable.image))
+				"Current Week", getResources().getDrawable(R.drawable.week))
 				.setContent(new Intent(Main.this, WeekTab.class));
 
 		tabHost.addTab(contactSpec);
@@ -91,6 +91,11 @@ public class Main extends TabActivity {
 		if (bcr == null) {
 			bcr = new BcReceiver();
 			registerReceiver(bcr, new IntentFilter(MyUtils.BIRTHDAY_ALERT));
+		}
+
+		if (bcra == null) {
+			bcra = new BcReceiverAlarm();
+			registerReceiver(bcra, new IntentFilter(MyUtils.ALARM_RESET));
 		}
 		super.onResume();
 	}
@@ -126,7 +131,8 @@ public class Main extends TabActivity {
 		if (isON) {
 			am.setRepeating(AlarmManager.RTC_WAKEUP, MyUtils
 					.getAlarmStartTimeAsLong(MyUtils.getAlarmHour(), MyUtils
-							.getAlarmMinute()), 5 * 60 * 1000, mAlarmSender);
+							.getAlarmMinute()), 24 * 60 * 60 * 1000,
+					mAlarmSender);
 			isAlarmSet = true;
 			Log.v(TAG, "main- alarm set");
 		} else {
@@ -157,6 +163,14 @@ public class Main extends TabActivity {
 			Intent alertIntent = new Intent(Main.this, AlertPage.class);
 			alertIntent.putExtras(intent.getExtras());
 			startActivity(alertIntent);
+		}
+	}
+
+	public class BcReceiverAlarm extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			setAlarm(false);// calcel old alarm
+			setAlarm(true);// set new alarm
 		}
 	}
 }
